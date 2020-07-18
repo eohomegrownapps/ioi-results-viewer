@@ -1,7 +1,10 @@
+import os
+
+import htmlmin
 import requests
 import requests_cache
+
 from bs4 import BeautifulSoup
-import os
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -15,7 +18,7 @@ class Renderer:
         site_path = os.path.join(site_dir, filename)
         template_path = env.get_template(templatename)
         with open(site_path, "w") as f:
-            f.write(template_path.render(kwargs))
+            f.write(htmlmin.minify(template_path.render(kwargs)))
 
 
 def parse_table(page, headings, skiprows=1):
@@ -78,7 +81,7 @@ def parse_num(n):
             return float(n)
         except:
             print(n)
-            assert 1==0
+            assert 1 == 0
 
 
 def render_results(year):
