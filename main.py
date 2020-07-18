@@ -1,4 +1,5 @@
 import requests
+import requests_cache
 from bs4 import BeautifulSoup
 import os
 from jinja2 import Environment, FileSystemLoader
@@ -55,11 +56,10 @@ def get_results(year):
     headings = list(results_parsed.table.tr.children)
 
     problems = [
-        (h.text, h.a["href"].split("/")[-1] if h.a else h.text)
-        for h in headings[3:-2]
+        (h.text, h.a["href"].split("/")[-1] if h.a else h.text) for h in headings[3:-2]
     ]
 
-    fullheadings = pre_headings + [p[0] for p in problems] + post_headings
+    fullheadings = pre_headings + [p[1] for p in problems] + post_headings
 
     table_data = parse_table(results_parsed.table, fullheadings, 2)
     return {
@@ -68,14 +68,71 @@ def get_results(year):
     }
 
 
+def parse_num(n):
+    if n == "–":
+        return 0
+    try:
+        return int(n)
+    except:
+        try:
+            return float(n)
+        except:
+            print(n)
+            assert 1==0
+
+
+def render_results(year):
+    results_data = get_results(year)
+    problems = results_data["problems"]
+    num_per_day = len(problems) // 2
+    day1_problems = problems[:num_per_day]
+    day2_problems = problems[num_per_day:]
+    for row in results_data["results"]:
+        # get day 1 score
+        day1_score = 0
+        for p in day1_problems:
+            day1_score += parse_num(row[p[1]])
+        day2_score = 0
+        for p in day2_problems:
+            day2_score += parse_num(row[p[1]])
+        row["day1_score_abs"] = (
+            int(day1_score)
+            if float(day1_score).is_integer()
+            else format(day1_score, ".2f")
+        )
+        row["day2_score_abs"] = (
+            int(day2_score)
+            if float(day2_score).is_integer()
+            else format(day2_score, ".2f")
+        )
+
+    for day in [("day1", "Day 1"), ("day2", "Day 2"), ("overall", "Overall")]:
+        renderer.render(
+            f"results/{year}-{day[0]}.html",
+            "results.html",
+            year=year,
+            day1_problems=day1_problems,
+            day2_problems=day2_problems,
+            results=results_data["results"],
+            day=day[1],
+        )
+
+
 if __name__ == "__main__":
+    # add arg to clear cache
+    requests_cache.install_cache("ioi_cache")
     root = os.path.dirname(os.path.abspath(__file__))
     site_dir = os.path.join(root, "site")
     templates_dir = os.path.join(root, "templates")
     env = Environment(loader=FileSystemLoader(templates_dir))
     renderer = Renderer(env, templates_dir, site_dir)
 
+    print("Rendering index... ")
     oly_list = scrape_olympiad_list()
     renderer.render("index.html", "index.html", olympiads=oly_list)
 
-    print(get_results("2000"))
+    for oly in oly_list:
+        print(f"Rendering {oly['year']} results...")
+        render_results(oly["year"])
+
+    print("Done")
