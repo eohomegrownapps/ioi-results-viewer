@@ -125,7 +125,7 @@ if __name__ == "__main__":
     # add arg to clear cache
     requests_cache.install_cache("ioi_cache")
     root = os.path.dirname(os.path.abspath(__file__))
-    site_dir = os.path.join(root, "site")
+    site_dir = os.path.join(root, "docs")
     templates_dir = os.path.join(root, "templates")
     env = Environment(loader=FileSystemLoader(templates_dir))
     renderer = Renderer(env, templates_dir, site_dir)
