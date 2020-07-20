@@ -13,6 +13,11 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+        <style>
+            th {
+                border-bottom: none !important;
+            }
+        </style>
     </head>
    <body>
         <nav class="light-blue lighten-1" role="navigation">
@@ -23,7 +28,7 @@
             <br><br>
             <h4 class="header center">IOI {{ year }} &mdash; {{ day }} Results</h4>
             <div class="row center">
-                <table id="results" class="striped responsive-table hover">
+                <table id="results" class="striped responsive-table hover" style="width:100%;font-size: 0.875rem">
                     <thead>
                         <tr>
                             <th></th>
@@ -33,14 +38,14 @@
 
                             {% if day != "Day 2" %}
                             {% for p in day1_problems %}
-                            <th>{{ p.0 }}</th>
+                            <th class="tooltipped" data-position="top" data-tooltip="{{ p.1 }}">{{ p.0 }}</th>
                             {% endfor %}
                             <th>Day 1 Score</th>
                             {% endif %}
 
                             {% if day != "Day 1" %}
                             {% for p in day2_problems %}
-                            <th>{{ p.0 }}</th>
+                            <th class="tooltipped" data-position="top" data-tooltip="{{ p.1 }}">{{ p.0 }}</th>
                             {% endfor %}
                             <th>Day 2 Score</th>
                             {% endif %}
@@ -57,7 +62,7 @@
                     {% for row in results %}
                         <tr>
                             <td></td>
-                            <td>{{ row.contestant }}</td>
+                            <th>{{ row.contestant }}</th>
                             <td>{{ row.country }}</td>
 
                             {% if day != "Day 2" %}
@@ -86,6 +91,11 @@
                 </table>
             </div>
         </div>
+        <div class="footer-copyright" style="padding:20px">
+            <div class="container">
+            Made by <a class="blue-text" href="https://github.com/eohomegrownapps">@eohomegrownapps</a>
+            </div>
+        </div>
         <script>
             $(document).ready(function () {
                 var t = $('#results').DataTable({
@@ -106,6 +116,11 @@
                         cell.innerHTML = i+1;
                     } );
                 } ).draw();
+                var elems = document.querySelectorAll('.tooltipped');
+                var instances = M.Tooltip.init(elems, {
+                    "margin": 0,
+                    "transitionMovement": 5,
+                });
             });
         </script>
     </body>

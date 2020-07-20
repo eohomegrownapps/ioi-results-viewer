@@ -13,6 +13,11 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
         <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+        <style>
+            th {
+                border-bottom: none !important;
+            }
+        </style>
     </head>
    <body>
         <nav class="light-blue lighten-1" role="navigation">
@@ -21,7 +26,10 @@
         <div class="section no-pad-bot" id="index-banner">
             <div class="container">
             <br><br>
-            <h4 class="header center">Olympiads</h4>
+            <h3 class="header center">Unofficial IOI Interactive Results Viewer</h3>
+            <div class="row center">
+                <h5 class="header col s12 light">IOI statistics from <a href="https://stats.ioinformatics.org/">stats.ioinformatics.org</a>, viewable by day and sortable by column.</h5>
+            </div>
             <div class="row center">
                 <table id="olympiads" class="striped responsive-table hover">
                     <thead>
@@ -51,6 +59,11 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="footer-copyright" style="padding:20px">
+            <div class="container">
+            Made by <a class="blue-text" href="https://github.com/eohomegrownapps">@eohomegrownapps</a>
             </div>
         </div>
         <script>

@@ -33,8 +33,8 @@ def parse_table(page, headings, skiprows=1):
         for cell in row:
             # TODO: typecasting
             row_obj[headings[ptr]] = cell.text
-            if cell.name == "a":
-                row_obj["hrefs"]["f"] = cell["href"]
+            if cell.a:
+                row_obj["hrefs"][headings[ptr]] = cell.a["href"]
             ptr += 1
         results.append(row_obj)
     return results
@@ -91,7 +91,7 @@ def render_results(year):
     day1_problems = problems[:num_per_day]
     day2_problems = problems[num_per_day:]
     for row in results_data["results"]:
-        # get day 1 score
+        row["country"] = row["hrefs"]["country"].split("/")[-1]
         day1_score = 0
         for p in day1_problems:
             day1_score += parse_num(row[p[1]])
